@@ -1,0 +1,73 @@
+# default schema for the plugin
+---
+type: map
+allowempty: false
+mapping:
+  uri:
+    required: false
+    type: str
+  image:
+    required: true
+    type: str
+  privileged:
+    required: false
+    type: bool
+  remove:
+    required: false
+    type: bool
+  tty:
+    required: false
+    type: bool
+  network_mode:
+    required: false
+    type: str
+    enum: ["bridge", "none", "host"]
+  environment:
+    required: false
+    type: map
+    allowempty: true
+  ports:
+    required: false
+    type: map
+    allowempty: true
+  mounts:
+    required: false
+    type: seq
+    sequence:
+      - type: map
+        mapping:
+          target:
+            required: true
+            type: str
+          source:
+            required: true
+            type: str
+          type:
+            required: false
+            type: str
+            enum: ["bind", "volume", "image", "tmpfs", "devpts"]
+          readonly:
+            required: false
+            type: bool
+  credential:
+    type: map
+    required: false
+    mapping:
+      username:
+        required: true
+        type: str
+      password:
+        required: true
+        type: str
+      registry:
+        required: true
+        type: str
+  ansible_params:
+    required: true
+    type: map
+    allowempty: false
+    mapping:
+      ansible_connection:
+        type: str
+        required: true
+        enum: ["podman"]

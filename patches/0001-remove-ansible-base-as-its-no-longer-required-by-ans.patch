@@ -1,0 +1,27 @@
+From d64d042d31fd3eb04d4a7408df8a2f6c0b05a6b1 Mon Sep 17 00:00:00 2001
+From: Ryan Williams <3375653+ryankwilliams@users.noreply.github.com>
+Date: Fri, 21 May 2021 12:41:40 -0400
+Subject: [PATCH 1/2] remove ansible-base as its no longer required by ansible
+ version >= 4.0
+
+Ansible 4.0 now installs ansible-core which replaces ansible-base.
+---
+ setup.py | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/setup.py b/setup.py
+index 9393e3e..1a45afe 100644
+--- a/setup.py
++++ b/setup.py
+@@ -48,8 +48,7 @@ setup(
+     include_package_data=True,
+     zip_safe=False,
+     install_requires=[
+-        'ansible>=2.5.0',
+-        'ansible-base != 2.10.6',
++        'ansible>=4.0',
+         'apache-libcloud==2.2.0',
+         "blaster>=0.3.0",
+         'Click>=6.7',
+--
+2.31.1

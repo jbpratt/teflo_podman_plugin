@@ -1,0 +1,37 @@
+---
+name: insert name
+description: an example of using the podman provisioner
+
+provision:
+  - name: test_driver
+    provisioner: podman
+    groups:
+      - test_drivers
+    image: "fedora"
+    network_mode: "host"
+    privileged: true
+    remove: true
+    tty: true
+    # mounts:
+    #  - target: /usr/local/apache2/htdocs/
+    #    source: files/index.html
+    #    readonly: true
+    #    type: volume
+    # uri: "ssh://jbpratt@desktop:22/run/user/1000/podman/podman.sock"
+    # credential
+    # volumes:
+    ports:
+      8080/tcp: 80
+    ansible_params:
+      ansible_connection: podman
+    environment:
+      SOMEVAR: helloworld
+
+orchestrate:
+  - name: Execute a playbook on the container
+    orchestrator: ansible
+    hosts: test_drivers
+    ansible_playbook:
+      name: tests/e2e/test.yml
+    ansible_galaxy_options:
+      role_file: tests/e2e/requirements.yml

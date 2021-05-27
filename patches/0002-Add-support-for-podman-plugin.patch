@@ -1,0 +1,75 @@
+From e4c8d4e4ffbc01cc1757d1af4d4cb2f0b59eb558 Mon Sep 17 00:00:00 2001
+From: Brady Pratt <bpratt@redhat.com>
+Date: Sat, 29 May 2021 12:21:01 -0500
+Subject: [PATCH 2/2] Add support for podman plugin
+
+We need to short circuit the `ssh_retry` function so that we use the
+`ansible_connection=podman` connection setting. Also fixed two syntax
+warnings and added a gitignore file.
+
+```
+/home/bpratt/pit/git/teflo/teflo/ansible_helpers.py:844: SyntaxWarning: "is" with a literal. Did you mean "=="?
+  if vaultpass is "":
+2021-05-29 11:54:58,046 WARNING Scenario workspace was not set, therefore the workspace is automatically assigned to the current working directory. You may experience problems if files needed by teflo do not exists in the scenario workspace.
+/home/bpratt/pit/git/teflo/teflo/provisioners/ext/bkr_client_plugin/beaker_client_plugin.py:144: SyntaxWarning: "is not" with a literal. Did you mean "!="?
+  if key is not 'name':
+```
+---
+ .gitignore                                                     | 2 ++
+ teflo/ansible_helpers.py                                       | 2 +-
+ teflo/helpers.py                                               | 3 +--
+ .../provisioners/ext/bkr_client_plugin/beaker_client_plugin.py | 2 +-
+ 4 files changed, 5 insertions(+), 4 deletions(-)
+ create mode 100644 .gitignore
+
+diff --git a/.gitignore b/.gitignore
+new file mode 100644
+index 0000000..9992834
+--- /dev/null
++++ b/.gitignore
+@@ -0,0 +1,2 @@
++*.egg-info
++**/__pycache__
+diff --git a/teflo/ansible_helpers.py b/teflo/ansible_helpers.py
+index a81b101..7fa8517 100644
+--- a/teflo/ansible_helpers.py
++++ b/teflo/ansible_helpers.py
+@@ -841,7 +841,7 @@ class AnsibleCredentialManager(object):
+                 vaultpass = os.getenv("VAULTPASS")
+             else:
+                 vaultpass = self.__config.get("VAULTPASS", "")
+-            if vaultpass is "":
++            if vaultpass == "":
+                 raise AnsibleVaultError('No vaultpass was found, please set the \
+                 vaultpass in teflo.cfg or in environment variable.')
+             self.populate_credetials(self.__config, self.__config["CREDENTIAL_PATH"], vaultpass)
+diff --git a/teflo/helpers.py b/teflo/helpers.py
+index a068048..3c92510 100644
+--- a/teflo/helpers.py
++++ b/teflo/helpers.py
+@@ -857,9 +857,8 @@ def ssh_retry(obj):
+             sys_vars = group.vars
+             server_ip = group.hosts[0].address
+             LOG.info(server_ip)
+-
+             # skip ssh connectivity check if server is localhost
+-            if is_host_localhost(server_ip):
++            if is_host_localhost(server_ip) or "podman" in sys_vars.get("ansible_connection", ""):
+                 return False
+
+             server_user = sys_vars['ansible_user']
+diff --git a/teflo/provisioners/ext/bkr_client_plugin/beaker_client_plugin.py b/teflo/provisioners/ext/bkr_client_plugin/beaker_client_plugin.py
+index 6e905ed..b1cd28d 100644
+--- a/teflo/provisioners/ext/bkr_client_plugin/beaker_client_plugin.py
++++ b/teflo/provisioners/ext/bkr_client_plugin/beaker_client_plugin.py
+@@ -141,7 +141,7 @@ class BeakerClientProvisionerPlugin(ProvisionerPlugin):
+
+         # set attributes for beaker xml object
+         for key, value in self.provider_params.items():
+-            if key is not 'name':
++            if key != 'name':
+                 if value:
+                     setattr(self.bkr_xml, key, value)
+
+--
+2.31.1

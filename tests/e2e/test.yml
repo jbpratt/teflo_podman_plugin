@@ -1,0 +1,8 @@
+---
+- name: Testing
+  hosts: all
+  connection: podman
+  tasks:
+    - name: Debug
+      debug:
+        msg: "this is a test!"

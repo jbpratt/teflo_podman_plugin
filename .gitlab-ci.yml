@@ -1,0 +1,67 @@
+---
+image: python
+
+stages:
+  - lint
+  - test
+
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_ID
+
+before_script:
+  - pip install -r requirements.txt
+
+.defaults: &defaults
+  image: python:3
+  before_script:
+    - pip install -r requirements.txt
+  tags:
+    - shared
+
+lint:pycodestyle:
+  <<: *defaults
+  stage: lint
+  image: python:3.6
+  script:
+    - tox -e lint
+
+lint:hooks:
+  <<: *defaults
+  stage: lint
+  allow_failure: true
+  before_script:
+    - pip install pre-commit
+  script:
+    - pre-commit run --all-files --verbose --show-diff-on-failure
+
+#test:py36: &test
+#  <<: *defaults
+#  image: python:3.6
+#  stage: test
+#  script:
+#    - tox -e py36
+#
+#test:py37:
+#  <<: *test
+#  image: python:3.7
+#  script:
+#    - tox -e py37
+#
+#test:py38:
+#  <<: *test
+#  image: python:3.8
+#  script:
+#    - tox -e py38
+#
+#test:py39:
+#  <<: *test
+#  image: python:3.9
+#  script:
+#    - tox -e py39
+
+test:e2e:
+  image: python:3.8
+  script:
+    - pip install -r tests/e2e/requirements.txt
+    - teflo run -s tests/e2e/scenario.yml
