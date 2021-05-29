@@ -21,3 +21,13 @@ Module containing custom validation functions used for schema checking.
 :copyright: (c) 2020 Red Hat, Inc.
 :license: GPLv3, see LICENSE for more details.
 """
+from typing import Sequence
+
+from pykwalify.rule import Rule
+
+
+def valid_volume_path(value: Sequence[str], obj_rule: Rule, path: str) -> bool:
+    return any(
+        len(v.split(":")) < 2
+        for v in value
+    )

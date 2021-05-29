@@ -7,6 +7,9 @@ clean-all: clean-pyc clean-tests clean
 test-functional:
 	tox -e py3-unit
 
+e2e:
+	pip install -r tests/e2e/requirements.txt && teflo run -s tests/e2e/scenario.yml
+
 clean:
 	rm -rf *.egg
 	rm -rf *.egg-info

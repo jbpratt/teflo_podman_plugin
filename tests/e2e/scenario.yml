@@ -1,5 +1,5 @@
 ---
-name: insert name
+name: e2e scenario test
 description: an example of using the podman provisioner
 
 provision:
@@ -12,20 +12,20 @@ provision:
     privileged: true
     remove: true
     tty: true
-    # mounts:
-    #  - target: /usr/local/apache2/htdocs/
-    #    source: files/index.html
-    #    readonly: true
-    #    type: volume
-    # uri: "ssh://jbpratt@desktop:22/run/user/1000/podman/podman.sock"
-    # credential
-    # volumes:
+    # remote:
+    #   user: jbpratt
+    #   identity: "{{ HOME }}/.ssh/id_rsa"
+    #   uri: ssh://jbpratt@desktop/run/user/1000/podman/podman.sock
+    volumes:
+      - "/tmp/:/tests"
     ports:
-      8080/tcp: 80
+      - "8080:80/tcp"
     ansible_params:
       ansible_connection: podman
     environment:
-      SOMEVAR: helloworld
+      - "SOMEVAR=helloworld"
+    additional_args:
+      - "-w /tests"
 
 orchestrate:
   - name: Execute a playbook on the container

@@ -1,2 +1,1 @@
 -e .
-teflo@git+https://github.com/jbpratt/teflo.git@dev#egg=teflo

@@ -1,0 +1,11 @@
+---
+name: E2E test
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Execute e2e test
+        run: make e2e
