@@ -1,3 +1,4 @@
+.teflo/
 .tox/
 *.egg-info/
 **/__pycache__

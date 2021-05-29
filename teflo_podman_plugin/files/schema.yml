@@ -3,11 +3,17 @@
 type: map
 allowempty: false
 mapping:
-  uri:
+  executable_path:
+    required: false
+    type: str
+  container_name:
     required: false
     type: str
   image:
     required: true
+    type: str
+  entrypoint:
+    required: false
     type: str
   privileged:
     required: false
@@ -24,31 +30,52 @@ mapping:
     enum: ["bridge", "none", "host"]
   environment:
     required: false
-    type: map
-    allowempty: true
+    type: seq
+    sequence:
+      - type: str
   ports:
-    required: false
-    type: map
-    allowempty: true
-  mounts:
     required: false
     type: seq
     sequence:
-      - type: map
-        mapping:
-          target:
-            required: true
-            type: str
-          source:
-            required: true
-            type: str
-          type:
-            required: false
-            type: str
-            enum: ["bind", "volume", "image", "tmpfs", "devpts"]
-          readonly:
-            required: false
-            type: bool
+      - type: str
+  volumes:
+    required: false
+    type: seq
+    sequence:
+      - type: str
+        func: valid_volume_path
+  capabilities:
+    required: false
+    type: map
+    mapping:
+      add:
+        required: false
+        type: seq
+        sequence:
+          - type: str
+      drop:
+        required: false
+        type: seq
+        sequence:
+          - type: str
+  additional_args:
+    required: false
+    type: seq
+    sequence:
+      - type: str
+  remote:
+    required: false
+    type: map
+    mapping:
+      user:
+        required: true
+        type: str
+      identity:
+        required: true
+        type: str
+      uri:
+        required: true
+        type: str
   credential:
     type: map
     required: false
