@@ -1,0 +1,44 @@
+From 681f329b3f18d0ab8bcf52ee1c5a47068128b753 Mon Sep 17 00:00:00 2001
+From: Brady Pratt <bpratt@redhat.com>
+Date: Wed, 2 Jun 2021 06:10:49 -0500
+Subject: [PATCH 3/3] Fall back to localhost copying of artifacts for podman
+ connections
+
+Podman is not a supported connection for the `synchronize` module so it
+fails to copy the artifacts. Falling back to localhost artifacts code path
+for the artifacts mounted to the container.
+
+```
+synchronize uses rsync to function. rsync needs to connect to the remote
+host via ssh, docker client or a direct filesystem copy. This remote
+host is being accessed via containers.podman.podman instead so it cannot
+work.
+```
+---
+ teflo/static/playbooks.py | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/teflo/static/playbooks.py b/teflo/static/playbooks.py
+index be9494c..4254bae 100644
+--- a/teflo/static/playbooks.py
++++ b/teflo/static/playbooks.py
+@@ -101,7 +101,7 @@ SYNCHRONIZE_PLAYBOOK = '''
+             | sed -E ':a;N;$!ba;s/\\r{0,1}\\n/\\\\n/g' | tr -d '\\r' >> {{ 'sync-results-' + uuid }}.txt
+           loop: "{{ local_sync_output.results }}"
+           delegate_to: localhost
+-      when: localhost
++      when: localhost or ansible_connection == "podman"
+
+     - block:
+         - name: check if rsync package is installed
+@@ -156,7 +156,7 @@ SYNCHRONIZE_PLAYBOOK = '''
+           delegate_to: localhost
+           with_items:
+             - "{{ sync_output.results }}"
+-      when: not localhost
++      when: not localhost and ansible_connection != "podman"
+ '''
+
+ GIT_CLONE_PLAYBOOK = '''
+--
+2.31.1

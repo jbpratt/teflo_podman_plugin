@@ -67,8 +67,7 @@ class PodmanProvisionerPlugin(ProvisionerPlugin):
             if not exe_path or exe_path == "":
                 raise TefloProvisionerError("failed to find podman executable")
 
-        self._exe = list()
-        self._exe.append(exe_path)
+        self._exe = [exe_path]
 
         remote = self.provider_params.get("remote")
         if remote:
