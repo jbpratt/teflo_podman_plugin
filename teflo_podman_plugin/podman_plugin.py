@@ -118,6 +118,9 @@ class PodmanProvisionerPlugin(ProvisionerPlugin):
             run_command.append(f"--cap-drop={cap}")
 
         for volume in self.provider_params.get("volumes", []):
+            src, dest = volume.split(":", 1)
+            if not os.path.exists(src):
+                os.makedirs(src)
             run_command.append(f"--volume={volume}")
 
         for arg in self.provider_params.get("additional_args", []):
